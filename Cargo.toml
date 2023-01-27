@@ -7,4 +7,11 @@ edition = "2021"
 crate-type = ["cdylib"]
 
 [dependencies]
+ark-std = { version = "^0.3.0", default-features = false }
+ark-serialize = { version = "^0.3.0", default-features = false }
+ark-bls12-381 = { version = "^0.3.0", default-features = false }
+ark-groth16 = { version = "^0.3.0", default-features = false }
+ark-snark = { version = "^0.3.0", default-features = false }
 wasm-bindgen = { version = "0.2.83" }
+
+relations = { git = "https://github.com/Cardinal-Cryptography/aleph-node", branch = "snarkeling", package = "relations", default-features = false }
