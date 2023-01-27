@@ -8,10 +8,11 @@
 
 <body>
 <script type="module">
-  import init, { generate_keys } from "./pkg/wasmarking.js";
+  import init, { generate_keys, generate_proof } from "./pkg/wasmarking.js";
 
   init().then(() => {
-    generate_keys();
+    const pk = generate_keys();
+    generate_proof(pk);
   });
 
 </script>
