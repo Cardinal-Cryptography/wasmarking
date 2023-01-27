@@ -1,26 +1,25 @@
-use ark_bls12_381::Bls12_381;
-use ark_groth16::Groth16;
-use ark_snark::SNARK;
-use ark_std::test_rng;
-use relations::{
-    serialize, CanonicalDeserialize, XorRelationWithFullInput, XorRelationWithoutInput,
-};
 use wasm_bindgen::prelude::wasm_bindgen;
 
-use crate::js_api::{alert, now};
+use crate::{
+    js_api::{alert, now},
+    relation::Relation,
+};
 
 mod js_api;
+mod relation;
 
 /// Generate keys for a SNARK relation.
 #[wasm_bindgen]
-pub fn generate_keys() -> Vec<u8> {
+pub fn generate_keys(relation_name: &str) -> Vec<u8> {
     let start = now();
 
-    let pk = _generate_keys();
+    let relation = Relation::from(relation_name);
+    let pk = relation.generate_keys();
+
+    let elapsed = now() - start;
 
     alert(&format!(
-        "It took {}ms. Key has length: {}",
-        now() - start,
+        "Generating keys for `{relation_name}` took {elapsed}ms. Key has length: {}",
         pk.len()
     ));
 
@@ -29,34 +28,16 @@ pub fn generate_keys() -> Vec<u8> {
 
 /// Generate a proof for a SNARK relation.
 #[wasm_bindgen]
-pub fn generate_proof(pk: Vec<u8>) {
+pub fn generate_proof(relation_name: &str, pk: Vec<u8>) {
     let start = now();
 
-    let proof = _generate_proof(pk);
+    let relation = Relation::from(relation_name);
+    let proof = relation.generate_proof(pk);
+
+    let elapsed = now() - start;
 
     alert(&format!(
-        "It took {}ms. Proof has length: {}",
-        now() - start,
+        "Generating proof for `{relation_name}` took {elapsed}ms. Proof has length: {}",
         proof.len()
     ));
-}
-
-fn _generate_keys() -> Vec<u8> {
-    let circuit = XorRelationWithoutInput::new(2);
-
-    let mut rng = test_rng();
-    let (pk, _vk) = Groth16::<Bls12_381>::circuit_specific_setup(circuit, &mut rng).unwrap();
-
-    serialize(&pk)
-}
-
-fn _generate_proof(pk: Vec<u8>) -> Vec<u8> {
-    let circuit = XorRelationWithFullInput::new(2, 1, 3);
-
-    let pk = CanonicalDeserialize::deserialize(&*pk).unwrap();
-
-    let mut rng = test_rng();
-    let proof = Groth16::<Bls12_381>::prove(&pk, circuit, &mut rng).unwrap();
-
-    serialize(&proof)
 }

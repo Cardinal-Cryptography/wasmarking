@@ -496,7 +496,7 @@ checksum = "ec0be4795e2f6a28069bec0b5ff3e2ac9bafc99e6a9a7dc3547996c5c816922c"
 [[package]]
 name = "relations"
 version = "0.1.0"
-source = "git+https://github.com/Cardinal-Cryptography/aleph-node?branch=snarkeling#d87267fffb474ccc9a216f33b026d90d7f4fe2ae"
+source = "git+https://github.com/Cardinal-Cryptography/aleph-node?rev=d87267fffb474ccc9a216f33b026d90d7f4fe2ae#d87267fffb474ccc9a216f33b026d90d7f4fe2ae"
 dependencies = [
  "ark-bls12-381",
  "ark-crypto-primitives",
@@ -547,7 +547,7 @@ dependencies = [
 [[package]]
 name = "snark-relation-proc-macro"
 version = "0.1.0"
-source = "git+https://github.com/Cardinal-Cryptography/aleph-node?branch=snarkeling#d87267fffb474ccc9a216f33b026d90d7f4fe2ae"
+source = "git+https://github.com/Cardinal-Cryptography/aleph-node?rev=d87267fffb474ccc9a216f33b026d90d7f4fe2ae#d87267fffb474ccc9a216f33b026d90d7f4fe2ae"
 dependencies = [
  "proc-macro2",
  "quote",
