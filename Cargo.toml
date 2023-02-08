@@ -6,6 +6,10 @@ edition = "2021"
 [lib]
 crate-type = ["cdylib"]
 
+[[bin]]
+name = "snarking"
+path = "src/bin.rs"
+
 [dependencies]
 ark-std = { version = "^0.3.0", default-features = false }
 ark-serialize = { version = "^0.3.0", default-features = false }
@@ -14,5 +18,5 @@ ark-groth16 = { version = "^0.3.0", default-features = false }
 ark-snark = { version = "^0.3.0", default-features = false }
 wasm-bindgen = { version = "0.2.83" }
 
-# current `snarkeling`, before `withdraw` is migrated to macroed version
-relations = { git = "https://github.com/Cardinal-Cryptography/aleph-node", rev = "d87267fffb474ccc9a216f33b026d90d7f4fe2ae", package = "relations", default-features = false }
+relations = { git = "https://github.com/Cardinal-Cryptography/aleph-node", branch = "snarkeling", package = "relations", default-features = false }
+
