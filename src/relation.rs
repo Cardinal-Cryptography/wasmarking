@@ -3,7 +3,10 @@ use ark_groth16::Groth16;
 use ark_serialize::CanonicalDeserialize;
 use ark_snark::SNARK;
 use ark_std::test_rng;
-use relations::{serialize, WithdrawRelation, XorRelationWithFullInput, XorRelationWithoutInput};
+use relations::{
+    serialize, WithdrawRelationWithFullInput, WithdrawRelationWithoutInput,
+    XorRelationWithFullInput, XorRelationWithoutInput,
+};
 
 pub enum Relation {
     Xor,
@@ -30,7 +33,7 @@ impl Relation {
                 &mut rng,
             ),
             Relation::Withdraw => Groth16::<Bls12_381>::circuit_specific_setup(
-                WithdrawRelation::without_input(16),
+                WithdrawRelationWithoutInput::new(16),
                 &mut rng,
             ),
         }
@@ -48,7 +51,7 @@ impl Relation {
                 Groth16::<Bls12_381>::prove(&pk, XorRelationWithFullInput::new(2, 1, 3), &mut rng)
             }
             Relation::Withdraw => {
-                let circuit = WithdrawRelation::with_full_input(
+                let circuit = WithdrawRelationWithFullInput::new(
                     16,
                     10,
                     [
