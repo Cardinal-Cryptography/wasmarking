@@ -13,5 +13,5 @@ fn withdraw(c: &mut Criterion) {
     c.bench_function("withdraw", |b| b.iter(|| relation.generate_keys()));
 }
 
-criterion_group!(prover, xor, withdraw);
-criterion_main!(prover);
+criterion_group!(key_generation, xor, withdraw);
+criterion_main!(key_generation);
