@@ -16,7 +16,7 @@ instant = { version = "0.1.12", default-features = false, features = [ "wasm-bin
 web-sys = { version = "0.3.60", default-features = false, features = ["console"] }
 wasm-bindgen = { version = "0.2.83" }
 
-relations = { git = "https://github.com/Cardinal-Cryptography/aleph-node", branch = "snarkeling", package = "relations", default-features = false }
+relations = { git = "https://github.com/Cardinal-Cryptography/aleph-node", branch = "snarkeling", package = "liminal-ark-relations", default-features = false }
 
 [dev-dependencies]
 criterion = "0.3"

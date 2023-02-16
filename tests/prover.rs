@@ -31,3 +31,8 @@ fn bench(relation_name: &str) {
 fn bench_xor() {
     bench("xor");
 }
+
+#[wasm_bindgen_test]
+fn bench_withdraw() {
+    bench("withdraw");
+}
