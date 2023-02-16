@@ -2,6 +2,11 @@
 
 Testing how (in)efficient it is to generate SNARK proofs in a browser
 
+To run all benchmarks:
+```shell
+make bench
+```
+
 ## Running wasm benchmarks
 
 ```shell
