@@ -4,11 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [lib]
-crate-type = ["cdylib"]
-
-[[bin]]
-name = "snarking"
-path = "src/bin.rs"
+crate-type = ["cdylib", "lib"]
 
 [dependencies]
 ark-std = { version = "^0.3.0", default-features = false }
@@ -16,7 +12,10 @@ ark-serialize = { version = "^0.3.0", default-features = false }
 ark-bls12-381 = { version = "^0.3.0", default-features = false }
 ark-groth16 = { version = "^0.3.0", default-features = false }
 ark-snark = { version = "^0.3.0", default-features = false }
+instant = { version = "0.1.12", default-features = false, features = [ "wasm-bindgen" ] }
+web-sys = { version = "0.3.60", default-features = false, features = ["console"] }
 wasm-bindgen = { version = "0.2.83" }
+wasm-bindgen-test = { version = "0.3.33", default-features = false }
 
 relations = { git = "https://github.com/Cardinal-Cryptography/aleph-node", branch = "snarkeling", package = "relations", default-features = false }
 
