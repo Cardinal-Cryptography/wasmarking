@@ -2,13 +2,15 @@
 
 Testing how (in)efficient it is to generate SNARK proofs in a browser
 
-# Usage
-
-The wasm module is built with `wasm-pack`.
-You can install it with `cargo install wasm-pack`.
-
-## Running tests
+## Running wasm benchmarks
 
 ```shell
+ cargo install wasm-pack
  wasm-pack test --release --headless --firefox
+```
+
+## Running native benchmarks
+
+```shell
+ cargo bench
 ```
