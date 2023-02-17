@@ -19,7 +19,7 @@ fn bench(relation_name: &str) {
 
     console::log_1(
         &format!(
-            "{:?} Performance: {:?}",
+            "{:?} prover. Relation performance: {:?}",
             relation_name,
             (elapsed / REPEAT as u32)
         )
