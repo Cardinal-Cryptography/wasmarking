@@ -7,6 +7,6 @@ native-bench:
 	@cargo bench --quiet --message-format=short
 
 wasm-bench: wasm-setup
-	@wasm-pack test --release --headless --firefox --quiet
+	@wasm-pack test --release --headless --firefox
 
 bench: native-bench wasm-bench
