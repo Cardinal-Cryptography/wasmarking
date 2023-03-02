@@ -12,20 +12,28 @@ ark-serialize = { version = "^0.3.0", default-features = false }
 ark-bls12-381 = { version = "^0.3.0", default-features = false }
 ark-groth16 = { version = "^0.3.0", default-features = false }
 ark-snark = { version = "^0.3.0", default-features = false }
+ark-relations = { version = "^0.3.0", default-features = false }
 instant = { version = "0.1.12", default-features = false, features = [ "wasm-bindgen" ] }
 web-sys = { version = "0.3.60", default-features = false, features = ["console"] }
 wasm-bindgen = { version = "0.2.83" }
 
 relations = { git = "https://github.com/Cardinal-Cryptography/aleph-node", branch = "snarkeling", package = "liminal-ark-relations", default-features = false }
+liminal-ark-poseidon = { git = "https://github.com/Cardinal-Cryptography/aleph-node", branch = "snarkeling", default-features = false, features = ["circuit"] }
 
 [dev-dependencies]
 criterion = "0.3"
 wasm-bindgen-test = { version = "0.3.33", default-features = false }
+manta-crypto = {git = "https://github.com/Cardinal-Cryptography/manta-rs" , default-features = false, features = ["ark-bls12-381", "getrandom", "test"] }
+manta-pay = { git = "https://github.com/Cardinal-Cryptography/manta-rs", default-features = false, features = ["groth16", "parameters", "test"] }
 
 [[bench]]
-name = "prover"
+name = "hash"
 harness = false
 
 [[bench]]
 name = "key_generation"
+harness = false
+
+[[bench]]
+name = "prover"
 harness = false
