@@ -1,5 +1,5 @@
 use ark_bls12_381::Fr;
-use ark_relations::r1cs::ConstraintSystem;
+use ark_relations::r1cs::ConstraintSystemRef;
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
 use liminal_ark_poseidon::circuit;
 use manta_crypto::{
@@ -40,7 +40,7 @@ fn poseidon_hash_liminal(c: &mut Criterion) {
         FpVar::<Fr>::Constant(1.into()),
         FpVar::<Fr>::Constant(2.into()),
     ]);
-    let cs = black_box(ConstraintSystem::new_ref());
+    let cs = black_box(ConstraintSystemRef::None);
     group.bench_function("liminal", |b| {
         b.iter(|| {
             let _ = black_box(circuit::two_to_one_hash(

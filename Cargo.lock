@@ -973,7 +973,7 @@ checksum = "348108ab3fba42ec82ff6e9564fc4ca0247bdccdc68dd8af9764bbc79c3c8ffb"
 [[package]]
 name = "liminal-ark-poseidon"
 version = "0.1.0"
-source = "git+https://github.com/Cardinal-Cryptography/aleph-node?branch=snarkeling#0efb6701f69e73ded9d1091780c7b2fa816691e8"
+source = "git+https://github.com/Cardinal-Cryptography/aleph-node?branch=snarkeling#c940eb2fa0fe4ce234a4ff8a6088dddd22614f72"
 dependencies = [
  "ark-bls12-381",
  "ark-ff",
@@ -1000,7 +1000,7 @@ dependencies = [
 [[package]]
 name = "liminal-ark-relations"
 version = "0.1.0"
-source = "git+https://github.com/Cardinal-Cryptography/aleph-node?branch=snarkeling#0efb6701f69e73ded9d1091780c7b2fa816691e8"
+source = "git+https://github.com/Cardinal-Cryptography/aleph-node?branch=snarkeling#c940eb2fa0fe4ce234a4ff8a6088dddd22614f72"
 dependencies = [
  "ark-bls12-381",
  "ark-crypto-primitives",
@@ -1050,7 +1050,7 @@ dependencies = [
 [[package]]
 name = "manta-accounting"
 version = "0.5.11"
-source = "git+https://github.com/Cardinal-Cryptography/manta-rs#0211053636f3a15f5aaba6be8356477b08b8db6d"
+source = "git+https://github.com/Cardinal-Cryptography/manta-rs#710bd7ff6c11e5e1bdb1305f7f0bda50f645a11c"
 dependencies = [
  "derivative",
  "derive_more",
@@ -1065,7 +1065,7 @@ dependencies = [
 [[package]]
 name = "manta-crypto"
 version = "0.5.11"
-source = "git+https://github.com/Cardinal-Cryptography/manta-rs#0211053636f3a15f5aaba6be8356477b08b8db6d"
+source = "git+https://github.com/Cardinal-Cryptography/manta-rs#710bd7ff6c11e5e1bdb1305f7f0bda50f645a11c"
 dependencies = [
  "ark-bls12-381",
  "ark-bn254",
@@ -1090,7 +1090,7 @@ dependencies = [
 [[package]]
 name = "manta-parameters"
 version = "0.5.11"
-source = "git+https://github.com/Cardinal-Cryptography/manta-rs#0211053636f3a15f5aaba6be8356477b08b8db6d"
+source = "git+https://github.com/Cardinal-Cryptography/manta-rs#710bd7ff6c11e5e1bdb1305f7f0bda50f645a11c"
 dependencies = [
  "anyhow",
  "blake3",
@@ -1102,7 +1102,7 @@ dependencies = [
 [[package]]
 name = "manta-pay"
 version = "0.5.11"
-source = "git+https://github.com/Cardinal-Cryptography/manta-rs#0211053636f3a15f5aaba6be8356477b08b8db6d"
+source = "git+https://github.com/Cardinal-Cryptography/manta-rs#710bd7ff6c11e5e1bdb1305f7f0bda50f645a11c"
 dependencies = [
  "aes-gcm",
  "blake2 0.10.6",
@@ -1118,7 +1118,7 @@ dependencies = [
 [[package]]
 name = "manta-util"
 version = "0.5.11"
-source = "git+https://github.com/Cardinal-Cryptography/manta-rs#0211053636f3a15f5aaba6be8356477b08b8db6d"
+source = "git+https://github.com/Cardinal-Cryptography/manta-rs#710bd7ff6c11e5e1bdb1305f7f0bda50f645a11c"
 
 [[package]]
 name = "matrixmultiply"
