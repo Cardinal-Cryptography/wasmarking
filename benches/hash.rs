@@ -3,32 +3,31 @@ use ark_relations::r1cs::ConstraintSystemRef;
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
 use liminal_ark_poseidon::circuit;
 use manta_crypto::{
-    arkworks::{
-        constraint::{fp::Fp, FpVar},
-        ff::field_new,
-    },
+    arkworks::constraint::{FpVar, R1CS},
     hash::ArrayHashFunction,
     rand::{OsRng, Sample},
 };
 use manta_pay::{
-    config::{poseidon::Spec2 as Poseidon2, utxo::InnerHashDomainTag, ConstraintField},
+    config::{poseidon::Spec2 as Poseidon2, utxo::InnerHashDomainTag},
     crypto::poseidon::hash::Hasher,
 };
+
 #[inline]
 fn poseidon_hash_manta(c: &mut Criterion) {
     let mut group = c.benchmark_group("poseidon");
     let mut rng = OsRng;
-    let hasher = black_box(Hasher::<Poseidon2, InnerHashDomainTag, 2>::sample(
+    let hasher = black_box(Hasher::<Poseidon2, InnerHashDomainTag, 2, R1CS<_>>::sample(
         (),
         &mut rng,
     ));
+    let mut compiler = black_box(R1CS::new_unchecked(ConstraintSystemRef::None));
     let inputs = black_box([
-        Fp(field_new!(ConstraintField, "1")),
-        Fp(field_new!(ConstraintField, "2")),
+        FpVar::<Fr>::Constant(1.into()),
+        FpVar::<Fr>::Constant(2.into()),
     ]);
     group.bench_function("manta", |b| {
         b.iter(|| {
-            let _ = black_box(hasher.hash([&inputs[0], &inputs[1]], &mut ()));
+            let _ = black_box(hasher.hash([&inputs[0], &inputs[1]], &mut compiler));
         })
     });
 }
