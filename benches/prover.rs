@@ -87,7 +87,7 @@ fn preimage_poseidon_manta(c: &mut Criterion) {
     let mut rng = ark_std::test_rng();
     let (pk, _) = Groth16::circuit_specific_setup(circuit_withouth_input, &mut rng).unwrap();
 
-    c.bench_function("preimage/liminal", |b| {
+    c.bench_function("preimage/liminal_poseidon_manta", |b| {
         b.iter(|| {
             // #constraints = 238
             let full_circuit = PreimageMantaRelationWithFullInput::new(
