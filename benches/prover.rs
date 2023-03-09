@@ -1,21 +1,29 @@
-use ark_bls12_381::Fr;
+use ark_bls12_381::{Fr, FrParameters};
 use ark_crypto_primitives::SNARK;
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
 use manta_crypto::{
-    arkworks::constraint::fp::Fp,
+    arkworks::{
+        constraint::{fp::Fp, FpVar, R1CS},
+        ff::Fp256,
+    },
+    eclair::{
+        alloc::{
+            mode::{Public, Secret},
+            Allocate,
+        },
+        bool::AssertEq,
+    },
     hash::ArrayHashFunction,
     rand::{OsRng, Sample},
 };
 use manta_pay::{
-    config::{poseidon::Spec2 as Poseidon2, utxo::InnerHashDomainTag},
+    config::{poseidon::Spec2 as Poseidon2, utxo::InnerHashDomainTag, Compiler},
     crypto::poseidon::hash::Hasher,
 };
-use relations::{
-    preimage_proving, ConstraintSystemRef, Groth16, PreimageRelationWithFullInput,
-    PreimageRelationWithoutInput,
-};
+use relations::{Groth16, PreimageRelationWithFullInput, PreimageRelationWithoutInput};
 use wasmarking::Relation;
 
+// TODO blockbox
 #[inline]
 fn preimage_manta(c: &mut Criterion) {
     let mut group = c.benchmark_group("preimage");
@@ -24,11 +32,19 @@ fn preimage_manta(c: &mut Criterion) {
         (),
         &mut rng,
     ));
-    let inputs = black_box([Fp(Fr::from(1)), Fp(Fr::from(2))]);
-    let _hash = black_box(hasher.hash([&inputs[0], &inputs[1]], &mut ()));
+    let x = Fp(Fr::from(1));
+    let y = Fp(Fr::from(2));
+    let image = hasher.hash([&x, &y], &mut ());
+    let hasher_circuit = Hasher::<Poseidon2, InnerHashDomainTag, 2, R1CS<_>>::sample((), &mut rng);
     group.bench_function("manta", |b| {
         b.iter(|| {
-            let _ = black_box(hasher.hash([&inputs[0], &inputs[1]], &mut ()));
+            let mut compiler = Compiler::for_proofs();
+            // let x = compiler.allocate_known(&x);
+            let x: FpVar<Fp256<FrParameters>> = x.as_known::<Secret, _>(&mut compiler);
+            let y: FpVar<Fp256<FrParameters>> = y.as_known::<Secret, _>(&mut compiler);
+            let image: FpVar<Fp256<FrParameters>> = image.as_known::<Public, _>(&mut compiler);
+            let hash_var = hasher_circuit.hash([&x, &y], &mut compiler);
+            compiler.assert_eq(&hash_var, &image);
         })
     });
 }
@@ -47,21 +63,13 @@ fn preimage(c: &mut Criterion) {
 
     c.bench_function("preimage/liminal", |b| {
         b.iter(|| {
+            // #constraints = 238
             let full_circuit =
                 PreimageRelationWithFullInput::new(frontend_image, preimage.0 .0, preimage1.0 .0);
 
-            match full_circuit {
-                ConstraintSystemRef::None => panic!(""),
-                ConstraintSystemRef::CS(cs) => println!("Number of constraints: {:?}", cs),
-            }
             let _ = <Groth16 as SNARK<Fr>>::prove(&pk, full_circuit, &mut rng);
         })
     });
-}
-
-#[inline]
-fn preimage_2(c: &mut Criterion) {
-    c.bench_function("preimage/liminal_simple", |b| b.iter(preimage_proving));
 }
 
 #[inline]
@@ -82,10 +90,11 @@ fn withdraw(c: &mut Criterion) {
     let mut group = c.benchmark_group("prover");
     group.sample_size(10);
     group.bench_function("withdraw", |b| {
+        // #constraints = 1534
         b.iter(|| relation.generate_proof(pk.clone()))
     });
     group.finish();
 }
 
-criterion_group!(prover, xor, withdraw, preimage, preimage_2);
+criterion_group!(prover, xor, withdraw, preimage, preimage_manta);
 criterion_main!(prover);
