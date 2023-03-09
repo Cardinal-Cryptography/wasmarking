@@ -1,6 +1,6 @@
 use ark_bls12_381::Fr;
 use ark_relations::r1cs::{ConstraintSystem, ConstraintSystemRef};
-use criterion::{black_box, criterion_group, criterion_main, Criterion};
+use criterion::{black_box, criterion_group, criterion_main, BenchmarkId, Criterion};
 use liminal_ark_poseidon::{circuit, hash};
 use manta_crypto::{
     arkworks::{
@@ -57,18 +57,37 @@ fn poseidon_hash_manta_circuit(c: &mut Criterion) {
 #[inline]
 fn poseidon_hash_liminal(c: &mut Criterion) {
     let mut group = c.benchmark_group("poseidon");
-    let inputs = black_box([
-        field_new!(ConstraintField, "1"),
-        field_new!(ConstraintField, "2"),
-    ]);
-    group.bench_function("liminal", |b| {
-        b.iter(|| {
-            let _ = black_box(hash::two_to_one_hash([
-                inputs[0].clone(),
-                inputs[1].clone(),
-            ]));
-        })
-    });
+    let inputs = vec![(Fr::new(1.into()), Fr::new(2.into()))];
+    for (index, (i, j)) in inputs.iter().enumerate() {
+        group.bench_with_input(
+            BenchmarkId::new("liminal", format!("id {}", index)),
+            &(&i, &j),
+            |b, (&i, &j)| b.iter(|| black_box(hash::two_to_one_hash([*i, *j]))),
+        );
+    }
+    // group.bench_function("liminal", |b| {
+    //     b.iter(|| {
+    //         let _ = black_box(hash::two_to_one_hash([*x[0], *x[1]]));
+    //     })
+    // });
+}
+
+#[inline]
+fn poseidon_hash_liminal_cached(c: &mut Criterion) {
+    let mut group = c.benchmark_group("poseidon");
+    let inputs = vec![(Fr::new(1.into()), Fr::new(2.into()))];
+    for (index, (i, j)) in inputs.iter().enumerate() {
+        group.bench_with_input(
+            BenchmarkId::new("liminal_cashed", format!("id {}", index)),
+            &(&i, &j),
+            |b, (&i, &j)| b.iter(|| black_box(hash::two_to_one_hash_cached([*i, *j]))),
+        );
+    }
+    // group.bench_function("liminal", |b| {
+    //     b.iter(|| {
+    //         let _ = black_box(hash::two_to_one_hash([*x[0], *x[1]]));
+    //     })
+    // });
 }
 
 #[inline]
@@ -94,6 +113,7 @@ criterion_group!(
     poseidon_hash_manta_circuit,
     poseidon_hash_manta,
     poseidon_hash_liminal,
+    poseidon_hash_liminal_cached,
     poseidon_hash_liminal_circuit
 );
 criterion_main!(crypto);
