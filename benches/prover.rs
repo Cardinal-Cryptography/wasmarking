@@ -20,7 +20,10 @@ use manta_pay::{
     config::{poseidon::Spec2 as Poseidon2, utxo::InnerHashDomainTag, Compiler},
     crypto::poseidon::hash::Hasher,
 };
-use relations::{Groth16, PreimageRelationWithFullInput, PreimageRelationWithoutInput};
+use relations::{
+    Groth16, PreimageMantaRelationWithFullInput, PreimageRelationWithFullInput,
+    PreimageRelationWithoutInput,
+};
 use wasmarking::Relation;
 
 // TODO blockbox
@@ -73,6 +76,32 @@ fn preimage(c: &mut Criterion) {
 }
 
 #[inline]
+fn preimage_poseidon_manta(c: &mut Criterion) {
+    let circuit_withouth_input = PreimageRelationWithoutInput::new();
+
+    let preimage = Fr::from(7u64);
+    let preimage1 = Fr::from(13u64);
+    let image = liminal_ark_poseidon::hash::two_to_one_hash([preimage, preimage1]);
+    let frontend_image: [u64; 4] = image.0 .0;
+
+    let mut rng = ark_std::test_rng();
+    let (pk, _) = Groth16::circuit_specific_setup(circuit_withouth_input, &mut rng).unwrap();
+
+    c.bench_function("preimage/liminal", |b| {
+        b.iter(|| {
+            // #constraints = 238
+            let full_circuit = PreimageMantaRelationWithFullInput::new(
+                frontend_image,
+                preimage.0 .0,
+                preimage1.0 .0,
+            );
+
+            let _ = <Groth16 as SNARK<Fr>>::prove(&pk, full_circuit, &mut rng);
+        })
+    });
+}
+
+#[inline]
 fn xor(c: &mut Criterion) {
     let relation = Relation::from("xor");
     let pk = relation.generate_keys();
@@ -96,5 +125,12 @@ fn withdraw(c: &mut Criterion) {
     group.finish();
 }
 
-criterion_group!(prover, xor, withdraw, preimage, preimage_manta);
+criterion_group!(
+    prover,
+    xor,
+    withdraw,
+    preimage,
+    preimage_manta,
+    preimage_poseidon_manta
+);
 criterion_main!(prover);
