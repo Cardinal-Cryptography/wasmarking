@@ -1,4 +1,4 @@
-use ark_bls12_381::{Bls12_381, Fr};
+use ark_bls12_381::Fr;
 use ark_crypto_primitives::SNARK;
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
 use manta_crypto::{
@@ -11,7 +11,8 @@ use manta_pay::{
     crypto::poseidon::hash::Hasher,
 };
 use relations::{
-    preimage_proving, Groth16, PreimageRelationWithFullInput, PreimageRelationWithoutInput,
+    preimage_proving, ConstraintSystemRef, Groth16, PreimageRelationWithFullInput,
+    PreimageRelationWithoutInput,
 };
 use wasmarking::Relation;
 
@@ -48,6 +49,11 @@ fn preimage(c: &mut Criterion) {
         b.iter(|| {
             let full_circuit =
                 PreimageRelationWithFullInput::new(frontend_image, preimage.0 .0, preimage1.0 .0);
+
+            match full_circuit {
+                ConstraintSystemRef::None => panic!(""),
+                ConstraintSystemRef::CS(cs) => println!("Number of constraints: {:?}", cs),
+            }
             let _ = <Groth16 as SNARK<Fr>>::prove(&pk, full_circuit, &mut rng);
         })
     });
