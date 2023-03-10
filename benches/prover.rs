@@ -6,6 +6,7 @@ use manta_crypto::{
         constraint::{fp::Fp, FpVar, R1CS},
         ff::Fp256,
     },
+    constraint::measure::Measure,
     eclair::{
         alloc::{
             mode::{Public, Secret},
@@ -48,6 +49,7 @@ fn preimage_manta(c: &mut Criterion) {
             let image: FpVar<Fp256<FrParameters>> = image.as_known::<Public, _>(&mut compiler);
             let hash_var = hasher_circuit.hash([&x, &y], &mut compiler);
             compiler.assert_eq(&hash_var, &image);
+            println!("num constraints: {}", compiler.constraint_count());
         })
     });
 }

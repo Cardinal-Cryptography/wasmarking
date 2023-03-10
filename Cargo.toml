@@ -24,7 +24,7 @@ liminal-ark-poseidon = { git = "https://github.com/Cardinal-Cryptography/aleph-n
 [dev-dependencies]
 criterion = "0.3"
 wasm-bindgen-test = { version = "0.3.33", default-features = false }
-manta-crypto = {git = "https://github.com/Cardinal-Cryptography/manta-rs" , default-features = false, features = ["ark-bls12-381", "getrandom", "test"] }
+manta-crypto = {git = "https://github.com/Cardinal-Cryptography/manta-rs" , default-features = false, features = ["ark-bls12-381", "getrandom", "test", "std"] }
 manta-pay = { git = "https://github.com/Cardinal-Cryptography/manta-rs", default-features = false, features = ["groth16", "parameters", "test"] }
 
 [[bench]]
