@@ -1096,7 +1096,7 @@ dependencies = [
 [[package]]
 name = "manta-accounting"
 version = "0.5.11"
-source = "git+https://github.com/Cardinal-Cryptography/manta-rs#710bd7ff6c11e5e1bdb1305f7f0bda50f645a11c"
+source = "git+https://github.com/Cardinal-Cryptography/manta-rs#b0d33767c1ba130918c1d919f1b6882c6522ded8"
 dependencies = [
  "derivative",
  "derive_more",
@@ -1111,7 +1111,7 @@ dependencies = [
 [[package]]
 name = "manta-crypto"
 version = "0.5.11"
-source = "git+https://github.com/Cardinal-Cryptography/manta-rs#710bd7ff6c11e5e1bdb1305f7f0bda50f645a11c"
+source = "git+https://github.com/Cardinal-Cryptography/manta-rs#b0d33767c1ba130918c1d919f1b6882c6522ded8"
 dependencies = [
  "ark-bls12-381",
  "ark-bn254",
@@ -1136,7 +1136,7 @@ dependencies = [
 [[package]]
 name = "manta-parameters"
 version = "0.5.11"
-source = "git+https://github.com/Cardinal-Cryptography/manta-rs#710bd7ff6c11e5e1bdb1305f7f0bda50f645a11c"
+source = "git+https://github.com/Cardinal-Cryptography/manta-rs#b0d33767c1ba130918c1d919f1b6882c6522ded8"
 dependencies = [
  "anyhow",
  "blake3",
@@ -1148,7 +1148,7 @@ dependencies = [
 [[package]]
 name = "manta-pay"
 version = "0.5.11"
-source = "git+https://github.com/Cardinal-Cryptography/manta-rs#710bd7ff6c11e5e1bdb1305f7f0bda50f645a11c"
+source = "git+https://github.com/Cardinal-Cryptography/manta-rs#b0d33767c1ba130918c1d919f1b6882c6522ded8"
 dependencies = [
  "aes-gcm",
  "blake2 0.10.6",
@@ -1164,7 +1164,7 @@ dependencies = [
 [[package]]
 name = "manta-util"
 version = "0.5.11"
-source = "git+https://github.com/Cardinal-Cryptography/manta-rs#710bd7ff6c11e5e1bdb1305f7f0bda50f645a11c"
+source = "git+https://github.com/Cardinal-Cryptography/manta-rs#b0d33767c1ba130918c1d919f1b6882c6522ded8"
 dependencies = [
  "crossbeam-channel",
  "serde",
