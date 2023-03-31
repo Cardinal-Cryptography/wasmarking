@@ -1,11 +1,10 @@
 use ark_bls12_381::Bls12_381;
-use ark_groth16::Groth16;
-use ark_serialize::CanonicalDeserialize;
+use ark_groth16::{Groth16, ProvingKey};
 use ark_snark::SNARK;
 use ark_std::test_rng;
 use relations::{
-    serialize, WithdrawRelationWithFullInput, WithdrawRelationWithoutInput,
-    XorRelationWithFullInput, XorRelationWithoutInput,
+    shielder::{WithdrawRelationWithFullInput, WithdrawRelationWithoutInput},
+    xor::{XorRelationWithFullInput, XorRelationWithoutInput},
 };
 
 pub enum Relation {
@@ -24,7 +23,7 @@ impl From<&str> for Relation {
 }
 
 impl Relation {
-    pub fn generate_keys(&self) -> Vec<u8> {
+    pub fn generate_keys(&self) -> ProvingKey<Bls12_381> {
         let mut rng = test_rng();
 
         let (pk, _vk) = match self {
@@ -39,14 +38,12 @@ impl Relation {
         }
         .unwrap();
 
-        serialize(&pk)
+        pk
     }
 
-    pub fn generate_proof(&self, pk: Vec<u8>) -> Vec<u8> {
-        let pk = CanonicalDeserialize::deserialize(&*pk).unwrap();
-
+    pub fn generate_proof(&self, pk: ProvingKey<Bls12_381>) {
         let mut rng = test_rng();
-        let proof = match self {
+        let _ = match self {
             Relation::Xor => {
                 Groth16::<Bls12_381>::prove(&pk, XorRelationWithFullInput::new(2, 1, 3), &mut rng)
             }
@@ -59,13 +56,13 @@ impl Relation {
                         130, 44, 133, 88, 133, 76, 205, 227, 154, 86, 132, 231, 165, 109, 162, 125,
                     ],
                     0,
-                    1919191919,
+                    [1919191919; 4],
                     [1, 2, 3, 4],
                     100,
                     [0, 0, 0, 0],
-                    17171717171717,
-                    181818181818,
-                    41414141414141,
+                    [17171717171717; 4],
+                    [181818181818; 4],
+                    [41414141414141; 4],
                     vec![
                         [0, 0, 0, 0],
                         [0, 0, 0, 0],
@@ -91,9 +88,6 @@ impl Relation {
                 );
                 Groth16::<Bls12_381>::prove(&pk, circuit, &mut rng)
             }
-        }
-        .unwrap();
-
-        serialize(&proof)
+        };
     }
 }

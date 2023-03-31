@@ -1,7 +1,10 @@
 .PHONY: wasm-setup native-bench wasm-bench
 
 wasm-setup:
-	@cargo install wasm-pack --quiet
+	@cargo install wasm-pack --quiet --no-default-features
+
+native-setup:
+	@cargo install cargo-criterion --quiet
 
 native-bench:
 	@echo "Benchmarking performance on native. Please wait..."
