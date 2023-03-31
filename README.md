@@ -33,3 +33,7 @@ or
 ```shell
  make native-bench
 ```
+
+## License
+
+The code in this repository is licensed under the terms of Apache License 2.0.
