@@ -14,7 +14,6 @@ fn withdraw(c: &mut Criterion) {
     let relation = Relation::from("withdraw");
     let pk = relation.generate_keys();
 
-    // #constraints = 1534
     c.bench_function("prover/withdraw", |b| {
         b.iter(|| relation.generate_proof(pk.clone()))
     });
