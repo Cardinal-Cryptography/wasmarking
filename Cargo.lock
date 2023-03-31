@@ -272,24 +272,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "ark-sponge"
-version = "0.3.0"
-source = "git+https://github.com/penumbra-zone/sponge?branch=r1cs#113469aef48a9c5f458dbf523a509d4769affbf2"
-dependencies = [
- "ark-ec",
- "ark-ff",
- "ark-nonnative-field",
- "ark-r1cs-std",
- "ark-relations",
- "ark-serialize",
- "ark-std",
- "derivative",
- "digest",
- "rand_chacha",
- "tracing",
-]
-
-[[package]]
 name = "ark-std"
 version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -658,25 +640,67 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "99227334921fae1a979cf0bfdfcc6b3e5ce376ef57e16fb6fb3ea2ed6095f80c"
 
 [[package]]
+name = "liminal-ark-pnbr-poseidon-parameters"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8723da56ab98f2182cbd27b9c510ca3c7f7bd616a56ca0e6b8f1b4bbc2c5f2ee"
+dependencies = [
+ "anyhow",
+ "ark-ff",
+ "num-integer",
+]
+
+[[package]]
+name = "liminal-ark-pnbr-poseidon-permutation"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "dc0419b780a13b09a1ed2db09c6c61752f24e5f341f77a93719cd8bc963b72d3"
+dependencies = [
+ "ark-ff",
+ "ark-std",
+ "liminal-ark-pnbr-poseidon-parameters",
+]
+
+[[package]]
+name = "liminal-ark-pnbr-sponge"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c6c178b0470950ac7fb73646df0f6ef60452d7b0fb0819e41dbe66674abc622f"
+dependencies = [
+ "ark-ec",
+ "ark-ff",
+ "ark-nonnative-field",
+ "ark-r1cs-std",
+ "ark-relations",
+ "ark-serialize",
+ "ark-std",
+ "derivative",
+ "digest",
+ "rand_chacha",
+ "tracing",
+]
+
+[[package]]
 name = "liminal-ark-poseidon"
 version = "0.1.0"
-source = "git+https://github.com/Cardinal-Cryptography/aleph-node?branch=snarkeling#1d9475b0c507713a2f3bab4b09563512e10ac414"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "92ff555fb3914d246c1d478b66d248d4e59daac3784f05c24a707a55d9a6bd2b"
 dependencies = [
  "ark-bls12-381",
  "ark-ff",
  "ark-r1cs-std",
  "ark-relations",
- "ark-sponge",
+ "liminal-ark-pnbr-poseidon-parameters",
+ "liminal-ark-pnbr-poseidon-permutation",
+ "liminal-ark-pnbr-sponge",
  "paste",
- "poseidon-parameters",
- "poseidon-permutation",
 ]
 
 [[package]]
 name = "liminal-ark-relation-macro"
-version = "0.1.1"
+version = "0.1.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d3051609a81c111cb4a6e2315c2e056869acf522dedde2d319bd6db71d220278"
+checksum = "2fffc8341caed7e6993016cce8f08cb47a13117cc54b1bf0df6c739536d690f4"
 dependencies = [
  "darling",
  "proc-macro2",
@@ -686,8 +710,8 @@ dependencies = [
 
 [[package]]
 name = "liminal-ark-relations"
-version = "0.1.0"
-source = "git+https://github.com/Cardinal-Cryptography/aleph-node?branch=snarkeling#1d9475b0c507713a2f3bab4b09563512e10ac414"
+version = "0.4.0"
+source = "git+https://github.com/Cardinal-Cryptography/aleph-node#d93048e0af67b977c8aee3580445014123c6f760"
 dependencies = [
  "ark-bls12-381",
  "ark-crypto-primitives",
@@ -707,6 +731,7 @@ dependencies = [
  "blake2",
  "liminal-ark-poseidon",
  "liminal-ark-relation-macro",
+ "paste",
 ]
 
 [[package]]
@@ -839,26 +864,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f9a81d2759aae1dae668f783c308bc5c8ebd191ff4184aaa1b37f65a6ae5a56f"
 dependencies = [
  "plotters-backend",
-]
-
-[[package]]
-name = "poseidon-parameters"
-version = "0.1.0"
-source = "git+https://github.com/penumbra-zone/poseidon377?rev=50699746#50699746c031a915d5434088a1240f4b568d9ee8"
-dependencies = [
- "anyhow",
- "ark-ff",
- "num-integer",
-]
-
-[[package]]
-name = "poseidon-permutation"
-version = "0.1.1"
-source = "git+https://github.com/penumbra-zone/poseidon377?rev=50699746#50699746c031a915d5434088a1240f4b568d9ee8"
-dependencies = [
- "ark-ff",
- "ark-std",
- "poseidon-parameters",
 ]
 
 [[package]]

@@ -5,7 +5,9 @@ fn xor(c: &mut Criterion) {
     let relation = Relation::from("xor");
     let pk = relation.generate_keys();
 
-    c.bench_function("xor", |b| b.iter(|| relation.generate_proof(pk.clone())));
+    c.bench_function("prover/xor", |b| {
+        b.iter(|| relation.generate_proof(pk.clone()))
+    });
 }
 
 fn withdraw(c: &mut Criterion) {

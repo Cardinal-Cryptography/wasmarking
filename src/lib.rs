@@ -3,8 +3,8 @@ use ark_groth16::{Groth16, ProvingKey};
 use ark_snark::SNARK;
 use ark_std::test_rng;
 use relations::{
-    WithdrawRelationWithFullInput, WithdrawRelationWithoutInput, XorRelationWithFullInput,
-    XorRelationWithoutInput,
+    shielder::{WithdrawRelationWithFullInput, WithdrawRelationWithoutInput},
+    xor::{XorRelationWithFullInput, XorRelationWithoutInput},
 };
 
 pub enum Relation {
@@ -56,13 +56,13 @@ impl Relation {
                         130, 44, 133, 88, 133, 76, 205, 227, 154, 86, 132, 231, 165, 109, 162, 125,
                     ],
                     0,
-                    1919191919,
+                    [1919191919; 4],
                     [1, 2, 3, 4],
                     100,
                     [0, 0, 0, 0],
-                    17171717171717,
-                    181818181818,
-                    41414141414141,
+                    [17171717171717; 4],
+                    [181818181818; 4],
+                    [41414141414141; 4],
                     vec![
                         [0, 0, 0, 0],
                         [0, 0, 0, 0],
