@@ -2,7 +2,7 @@ use ark_bls12_381::Bls12_381;
 use ark_groth16::{Groth16, Proof, ProvingKey, VerifyingKey};
 use ark_snark::SNARK;
 use ark_std::test_rng;
-use relations::{
+use ark_relations::{
     shielder::{
         WithdrawRelationWithFullInput, WithdrawRelationWithPublicInput,
         WithdrawRelationWithoutInput,
@@ -10,12 +10,12 @@ use relations::{
     xor::{XorRelationWithFullInput, XorRelationWithoutInput},
 };
 
-pub enum Relation {
+pub enum ArkRelation {
     Xor,
     Withdraw,
 }
 
-impl From<&str> for Relation {
+impl From<&str> for ArkRelation {
     fn from(value: &str) -> Self {
         match value {
             "xor" => Self::Xor,
@@ -24,17 +24,16 @@ impl From<&str> for Relation {
         }
     }
 }
-
-impl Relation {
+impl ArkRelation {
     pub fn generate_keys(&self) -> (ProvingKey<Bls12_381>, VerifyingKey<Bls12_381>) {
         let mut rng = test_rng();
 
         let (pk, vk) = match self {
-            Relation::Xor => Groth16::<Bls12_381>::circuit_specific_setup(
+            ArkRelation::Xor => Groth16::<Bls12_381>::circuit_specific_setup(
                 XorRelationWithoutInput::new(2),
                 &mut rng,
             ),
-            Relation::Withdraw => Groth16::<Bls12_381>::circuit_specific_setup(
+            ArkRelation::Withdraw => Groth16::<Bls12_381>::circuit_specific_setup(
                 WithdrawRelationWithoutInput::new(16),
                 &mut rng,
             ),
@@ -47,10 +46,10 @@ impl Relation {
     pub fn generate_proof(&self, pk: ProvingKey<Bls12_381>) -> Proof<Bls12_381> {
         let mut rng = test_rng();
         match self {
-            Relation::Xor => {
+            ArkRelation::Xor => {
                 Groth16::<Bls12_381>::prove(&pk, XorRelationWithFullInput::new(2, 1, 3), &mut rng)
             }
-            Relation::Withdraw => {
+            ArkRelation::Withdraw => {
                 let circuit = WithdrawRelationWithFullInput::new(
                     16,
                     10,
@@ -97,8 +96,8 @@ impl Relation {
 
     pub fn verify_proof(&self, proof: &Proof<Bls12_381>, vk: &VerifyingKey<Bls12_381>) {
         match self {
-            Relation::Xor => (),
-            Relation::Withdraw => {
+            ArkRelation::Xor => (),
+            ArkRelation::Withdraw => {
                 let public_input = WithdrawRelationWithPublicInput::new(
                     16,
                     10,

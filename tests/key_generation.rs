@@ -1,6 +1,6 @@
 use instant::Instant;
 use wasm_bindgen_test::{wasm_bindgen_test, wasm_bindgen_test_configure};
-use wasmarking::Relation;
+use wasmarking::ArkRelation;
 use web_sys::console;
 
 wasm_bindgen_test_configure!(run_in_browser);
@@ -8,7 +8,7 @@ wasm_bindgen_test_configure!(run_in_browser);
 static REPEAT: usize = 3;
 
 fn bench(relation_name: &str) {
-    let relation = Relation::from(relation_name);
+    let relation = ArkRelation::from(relation_name);
 
     let start = Instant::now();
     for _ in 0..REPEAT {
