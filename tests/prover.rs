@@ -40,7 +40,8 @@ fn bench_ark_withdraw() {
 #[wasm_bindgen_test]
 fn bench_jf_withdraw() {
     let relation = JfRelation::Withdraw;
-    let (pk, _) = relation.generate_keys();
+    let srs = relation.generate_srs();
+    let (pk, _) = relation.generate_keys(&srs);
 
     let start = Instant::now();
     for _ in 0..REPEAT {

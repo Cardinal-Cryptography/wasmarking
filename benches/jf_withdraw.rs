@@ -4,11 +4,19 @@ use wasmarking::JfRelation;
 fn bench(c: &mut Criterion) {
     let relation = JfRelation::Withdraw;
 
-    c.bench_function("jf/withdraw/keygen", |b| {
-        b.iter(|| relation.generate_keys())
+    c.bench_function("jf/withdraw/gen_circuit", |b| {
+        b.iter(|| relation.generate_circuit())
     });
 
-    let (pk, vk) = relation.generate_keys();
+    c.bench_function("jf/withdraw/srsgen", |b| b.iter(|| relation.generate_srs()));
+
+    let srs = relation.generate_srs();
+
+    c.bench_function("jf/withdraw/keygen", |b| {
+        b.iter(|| relation.generate_keys(&srs))
+    });
+
+    let (pk, vk) = relation.generate_keys(&srs);
 
     c.bench_function("jf/withdraw/prover", |b| {
         b.iter(|| relation.generate_proof(pk.clone()))

@@ -12,15 +12,19 @@ use ark_relations::{
 };
 use ark_snark::SNARK;
 use ark_std::test_rng;
-use jf_primitives::merkle_tree::{
-    prelude::RescueSparseMerkleTree, MerkleTreeScheme, UniversalMerkleTreeScheme, MerkleCommitment,
+use jf_primitives::{
+    merkle_tree::{
+        prelude::RescueSparseMerkleTree, MerkleCommitment, MerkleTreeScheme,
+        UniversalMerkleTreeScheme,
+    },
+    pcs::prelude::UnivariateUniversalParams,
 };
 use jf_relations::{
     generate_srs,
     shielder_types::{compute_note, convert_array},
-    withdraw::{WithdrawPrivateInput,WithdrawRelation, WithdrawPublicInput},
-    PlonkKzgSnark, Proof as JfProof, ProvingKey as JfProvingKey, StandardTranscript,
-    VerifyingKey as JfVerifyingKey, Relation as _, PublicInput, Curve, UniversalSNARK,
+    withdraw::{WithdrawPrivateInput, WithdrawPublicInput, WithdrawRelation},
+    Curve, PlonkKzgSnark, Proof as JfProof, ProvingKey as JfProvingKey, PublicInput, Relation as _,
+    StandardTranscript, UniversalSNARK, VerifyingKey as JfVerifyingKey,
 };
 use num_bigint::BigUint;
 
@@ -138,25 +142,30 @@ pub enum JfRelation {
 }
 
 impl JfRelation {
-    pub fn generate_keys(&self) -> (JfProvingKey<Curve>, JfVerifyingKey<Curve>) {
-        let rng = &mut jf_utils::test_rng();
-        let srs = generate_srs(17_000, rng).unwrap();
+    pub fn generate_circuit(&self) {
+        jf_relation().generate_circuit().unwrap();
+    }
 
-        WithdrawRelation::generate_keys(&srs).unwrap()
+    pub fn generate_srs(&self) -> UnivariateUniversalParams<Curve> {
+        let rng = &mut jf_utils::test_rng();
+        generate_srs(17_000, rng).unwrap()
+    }
+
+    pub fn generate_keys(
+        &self,
+        srs: &UnivariateUniversalParams<Curve>,
+    ) -> (JfProvingKey<Curve>, JfVerifyingKey<Curve>) {
+        WithdrawRelation::generate_keys(srs).unwrap()
     }
 
     pub fn generate_proof(&self, pk: JfProvingKey<Curve>) -> JfProof<Curve> {
         let rng = &mut jf_utils::test_rng();
-        let relation = relation();
+        let relation = jf_relation();
         relation.generate_proof(&pk, rng).unwrap()
     }
 
-    pub fn verify_proof(
-        &self,
-        proof: &JfProof<Curve>,
-        vk: &JfVerifyingKey<Curve>,
-    ) {
-        let input = relation().public_input();
+    pub fn verify_proof(&self, proof: &JfProof<Curve>, vk: &JfVerifyingKey<Curve>) {
+        let input = jf_relation().public_input();
         assert!(
             PlonkKzgSnark::<Curve>::verify::<StandardTranscript>(&vk, &input, &proof, None,)
                 .is_ok()
@@ -164,7 +173,7 @@ impl JfRelation {
     }
 }
 
-fn relation() -> WithdrawRelation {
+fn jf_relation() -> WithdrawRelation {
     let token_id = 1;
     let whole_token_amount = 10;
     let spend_trapdoor = [1; 4];
