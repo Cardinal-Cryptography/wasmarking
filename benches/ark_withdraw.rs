@@ -5,7 +5,9 @@ use wasmarking::ArkRelation;
 fn bench(c: &mut Criterion) {
     let relation = ArkRelation::from("withdraw");
 
-    c.bench_function("ark/withdraw/keygen", |b| b.iter(|| relation.generate_keys()));
+    c.bench_function("ark/withdraw/keygen", |b| {
+        b.iter(|| relation.generate_keys())
+    });
 
     let (pk, vk) = relation.generate_keys();
     print_sizes("verify key", &vk);

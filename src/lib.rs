@@ -1,7 +1,8 @@
 use ark_bls12_381::Bls12_381;
-use ark_groth16::{Groth16, Proof, ProvingKey, VerifyingKey};
-use ark_snark::SNARK;
-use ark_std::test_rng;
+use ark_ff::PrimeField;
+use ark_groth16::{
+    Groth16, Proof as ArkProof, ProvingKey as ArkProvingKey, VerifyingKey as ArkVerifyingKey,
+};
 use ark_relations::{
     shielder::{
         WithdrawRelationWithFullInput, WithdrawRelationWithPublicInput,
@@ -9,6 +10,19 @@ use ark_relations::{
     },
     xor::{XorRelationWithFullInput, XorRelationWithoutInput},
 };
+use ark_snark::SNARK;
+use ark_std::test_rng;
+use jf_primitives::merkle_tree::{
+    prelude::RescueSparseMerkleTree, MerkleTreeScheme, UniversalMerkleTreeScheme, MerkleCommitment,
+};
+use jf_relations::{
+    generate_srs,
+    shielder_types::{compute_note, convert_array},
+    withdraw::{WithdrawPrivateInput,WithdrawRelation, WithdrawPublicInput},
+    PlonkKzgSnark, Proof as JfProof, ProvingKey as JfProvingKey, StandardTranscript,
+    VerifyingKey as JfVerifyingKey, Relation as _, PublicInput, Curve, UniversalSNARK,
+};
+use num_bigint::BigUint;
 
 pub enum ArkRelation {
     Xor,
@@ -24,8 +38,9 @@ impl From<&str> for ArkRelation {
         }
     }
 }
+
 impl ArkRelation {
-    pub fn generate_keys(&self) -> (ProvingKey<Bls12_381>, VerifyingKey<Bls12_381>) {
+    pub fn generate_keys(&self) -> (ArkProvingKey<Bls12_381>, ArkVerifyingKey<Bls12_381>) {
         let mut rng = test_rng();
 
         let (pk, vk) = match self {
@@ -43,7 +58,7 @@ impl ArkRelation {
         (pk, vk)
     }
 
-    pub fn generate_proof(&self, pk: ProvingKey<Bls12_381>) -> Proof<Bls12_381> {
+    pub fn generate_proof(&self, pk: ArkProvingKey<Bls12_381>) -> ArkProof<Bls12_381> {
         let mut rng = test_rng();
         match self {
             ArkRelation::Xor => {
@@ -94,7 +109,7 @@ impl ArkRelation {
         .unwrap()
     }
 
-    pub fn verify_proof(&self, proof: &Proof<Bls12_381>, vk: &VerifyingKey<Bls12_381>) {
+    pub fn verify_proof(&self, proof: &ArkProof<Bls12_381>, vk: &ArkVerifyingKey<Bls12_381>) {
         match self {
             ArkRelation::Xor => (),
             ArkRelation::Withdraw => {
@@ -116,4 +131,90 @@ impl ArkRelation {
             }
         };
     }
+}
+
+pub enum JfRelation {
+    Withdraw,
+}
+
+impl JfRelation {
+    pub fn generate_keys(&self) -> (JfProvingKey<Curve>, JfVerifyingKey<Curve>) {
+        let rng = &mut jf_utils::test_rng();
+        let srs = generate_srs(17_000, rng).unwrap();
+
+        WithdrawRelation::generate_keys(&srs).unwrap()
+    }
+
+    pub fn generate_proof(&self, pk: JfProvingKey<Curve>) -> JfProof<Curve> {
+        let rng = &mut jf_utils::test_rng();
+        let relation = relation();
+        relation.generate_proof(&pk, rng).unwrap()
+    }
+
+    pub fn verify_proof(
+        &self,
+        proof: &JfProof<Curve>,
+        vk: &JfVerifyingKey<Curve>,
+    ) {
+        let input = relation().public_input();
+        assert!(
+            PlonkKzgSnark::<Curve>::verify::<StandardTranscript>(&vk, &input, &proof, None,)
+                .is_ok()
+        )
+    }
+}
+
+fn relation() -> WithdrawRelation {
+    let token_id = 1;
+    let whole_token_amount = 10;
+    let spend_trapdoor = [1; 4];
+    let spend_nullifier = [2; 4];
+    let spend_note = compute_note(
+        token_id,
+        whole_token_amount,
+        spend_trapdoor,
+        spend_nullifier,
+    );
+
+    let deposit_token_amount = 7;
+    let deposit_trapdoor = [3; 4];
+    let deposit_nullifier = [4; 4];
+    let deposit_note = compute_note(
+        token_id,
+        deposit_token_amount,
+        deposit_trapdoor,
+        deposit_nullifier,
+    );
+
+    let leaf_index = 0u64;
+    let uid = BigUint::from(leaf_index);
+    let elem = convert_array(spend_note);
+    let mt = RescueSparseMerkleTree::from_kv_set(11, &[(uid.clone(), elem)]).unwrap();
+    let (retrieved_elem, merkle_proof) = mt.lookup(&uid).expect_ok().unwrap();
+    assert_eq!(retrieved_elem, elem);
+    assert!(mt.verify(&uid, merkle_proof.clone()).expect("succeed"));
+    let merkle_root = mt.commitment().digest().into_bigint().0;
+
+    let public_input = WithdrawPublicInput {
+        fee: 1,
+        recipient: [7; 32],
+        token_id,
+        spend_nullifier,
+        token_amount_out: 3,
+        merkle_root,
+        deposit_note,
+    };
+
+    let private_input = WithdrawPrivateInput {
+        spend_trapdoor,
+        deposit_trapdoor,
+        deposit_nullifier,
+        merkle_proof,
+        leaf_index,
+        spend_note,
+        whole_token_amount,
+        deposit_token_amount,
+    };
+
+    WithdrawRelation::new(public_input, private_input)
 }
