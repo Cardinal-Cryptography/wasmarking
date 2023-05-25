@@ -7,12 +7,13 @@ edition = "2021"
 crate-type = ["cdylib"]
 
 [dependencies]
-ark-std = { version = "^0.3.0", default-features = false }
-ark-serialize = { version = "^0.3.0", default-features = false }
-ark-bls12-381 = { version = "^0.3.0", default-features = false }
-ark-groth16 = { version = "^0.3.0", default-features = false }
-ark-snark = { version = "^0.3.0", default-features = false }
+num-bigint = { version = "0.4", default-features = false }
+ark-ff = { version = "^0.4.0" }
+
+jf-utils = { path = "../../espresso/jellyfish/utilities", features = ["parallel"] }
+jf-primitives = { path = "../../espresso/jellyfish/primitives", features = ["parallel"] }
 wasm-bindgen = { version = "0.2.83" }
 
-# current `snarkeling`, before `withdraw` is migrated to macroed version
-relations = { git = "https://github.com/Cardinal-Cryptography/aleph-node", rev = "d87267fffb474ccc9a216f33b026d90d7f4fe2ae", package = "relations", default-features = false }
+jf-relations = { path = "../aleph-node/relations/jf", package = "liminal-jf-relations", default-features = false, features = ["test-srs"]}
+
+getrandom = { version = "0.2", features = ["js"] }

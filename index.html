@@ -8,14 +8,10 @@
 
 <body>
 <script type="module">
-  import init, { generate_keys, generate_proof } from "./pkg/wasmarking.js";
+  import init, { generate_proof } from "./pkg/wasmarking.js";
 
   init().then(() => {
-    const xor_pk = generate_keys("xor");
-    generate_proof("xor", xor_pk);
-
-    const withdraw_pk = generate_keys("withdraw");
-    generate_proof("withdraw", withdraw_pk);
+    generate_proof();
   });
 
 </script>
