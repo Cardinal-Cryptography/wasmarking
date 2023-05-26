@@ -37,7 +37,6 @@ fn ark_bench_withdraw() {
 }
 
 fn jf_bench(operation: &str, job: impl Fn()) {
-
     let start = Instant::now();
     for _ in 0..REPEAT {
         job()
@@ -61,11 +60,15 @@ fn jf_bench_withdraw() {
     let job = || relation.generate_circuit();
     jf_bench("circuit generation", job);
 
-    let job = || {let _ =relation.generate_srs();};
+    let job = || {
+        let _ = relation.generate_srs();
+    };
     jf_bench("srs generation", job);
 
     let srs = relation.generate_srs();
 
-    let job = ||{let _ =relation.generate_keys(&srs);};
+    let job = || {
+        let _ = relation.generate_keys(&srs);
+    };
     jf_bench("keys generation", job);
 }
