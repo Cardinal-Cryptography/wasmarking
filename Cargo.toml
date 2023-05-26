@@ -12,8 +12,12 @@ ark-ff = { version = "^0.4.0" }
 
 jf-utils = { path = "../../espresso/jellyfish/utilities", features = ["parallel"] }
 jf-primitives = { path = "../../espresso/jellyfish/primitives", features = ["parallel"] }
-wasm-bindgen = { version = "0.2.83" }
 
 jf-relations = { path = "../aleph-node/relations/jf", package = "liminal-jf-relations", default-features = false, features = ["test-srs"]}
 
 getrandom = { version = "0.2", features = ["js"] }
+
+wasm-bindgen = "0.2.83"
+rayon = "1.7"
+wasm-bindgen-rayon = "1.0"
+web-sys = { version = "0.3" , features = ['console'] }

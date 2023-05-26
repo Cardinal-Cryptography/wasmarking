@@ -8,9 +8,11 @@
 
 <body>
 <script type="module">
-  import init, { generate_proof } from "./pkg/wasmarking.js";
+  import init, { initThreadPool, generate_proof } from "./pkg/wasmarking.js";
 
   init().then(() => {
+    initThreadPool(navigator.hardwareConcurrency);
+  }).then(() => {
     generate_proof();
   });
 
