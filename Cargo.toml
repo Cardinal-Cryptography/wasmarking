@@ -8,20 +8,30 @@ crate-type = ["cdylib", "lib"]
 
 [dependencies]
 ark-std = { version = "^0.3.0", default-features = false }
+ark-ff = { version = "^0.4.0" }
 ark-serialize = { version = "^0.3.0", default-features = false }
 ark-bls12-381 = { version = "^0.3.0", default-features = false }
 ark-groth16 = { version = "^0.3.0", default-features = false }
 ark-snark = { version = "^0.3.0", default-features = false }
 instant = { version = "0.1.12", default-features = false, features = [ "wasm-bindgen" ] }
+jf-utils = { git = "https://github.com/EspressoSystems/jellyfish", rev = "f431648" }
+jf-primitives = { git = "https://github.com/EspressoSystems/jellyfish", rev = "f431648" }
+num-bigint = { version = "0.4", default-features = false }
 web-sys = { version = "0.3.60", default-features = false, features = ["console"] }
 wasm-bindgen = { version = "0.2.83" }
 
-relations = { git = "https://github.com/Cardinal-Cryptography/aleph-node", package = "liminal-ark-relations", default-features = false, features = ["circuit"]}
+ark-relations = { git = "https://github.com/Cardinal-Cryptography/aleph-node", package = "liminal-ark-relations", default-features = false, features = ["circuit"]}
+jf-relations = { git = "https://github.com/Cardinal-Cryptography/aleph-node", package = "liminal-jf-relations", default-features = false, features = ["test-srs"]}
 
 [dev-dependencies]
 criterion = "0.3"
 wasm-bindgen-test = { version = "0.3.33", default-features = false }
+getrandom = { version = "0.2", features = ["js"] }
 
 [[bench]]
-name = "withdraw"
+name = "ark_withdraw"
+harness = false
+
+[[bench]]
+name = "jf_withdraw"
 harness = false

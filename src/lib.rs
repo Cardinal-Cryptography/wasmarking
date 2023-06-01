@@ -1,21 +1,39 @@
 use ark_bls12_381::Bls12_381;
-use ark_groth16::{Groth16, Proof, ProvingKey, VerifyingKey};
-use ark_snark::SNARK;
-use ark_std::test_rng;
-use relations::{
+use ark_ff::PrimeField;
+use ark_groth16::{
+    Groth16, Proof as ArkProof, ProvingKey as ArkProvingKey, VerifyingKey as ArkVerifyingKey,
+};
+use ark_relations::{
     shielder::{
         WithdrawRelationWithFullInput, WithdrawRelationWithPublicInput,
         WithdrawRelationWithoutInput,
     },
     xor::{XorRelationWithFullInput, XorRelationWithoutInput},
 };
+use ark_snark::SNARK;
+use ark_std::test_rng;
+use jf_primitives::{
+    merkle_tree::{
+        prelude::RescueSparseMerkleTree, MerkleCommitment, MerkleTreeScheme,
+        UniversalMerkleTreeScheme,
+    },
+    pcs::prelude::UnivariateUniversalParams,
+};
+use jf_relations::{
+    generate_srs,
+    shielder_types::{compute_note, convert_array},
+    withdraw::{WithdrawPrivateInput, WithdrawPublicInput, WithdrawRelation},
+    Curve, PlonkKzgSnark, Proof as JfProof, ProvingKey as JfProvingKey, PublicInput, Relation as _,
+    StandardTranscript, UniversalSNARK, VerifyingKey as JfVerifyingKey,
+};
+use num_bigint::BigUint;
 
-pub enum Relation {
+pub enum ArkRelation {
     Xor,
     Withdraw,
 }
 
-impl From<&str> for Relation {
+impl From<&str> for ArkRelation {
     fn from(value: &str) -> Self {
         match value {
             "xor" => Self::Xor,
@@ -25,16 +43,16 @@ impl From<&str> for Relation {
     }
 }
 
-impl Relation {
-    pub fn generate_keys(&self) -> (ProvingKey<Bls12_381>, VerifyingKey<Bls12_381>) {
+impl ArkRelation {
+    pub fn generate_keys(&self) -> (ArkProvingKey<Bls12_381>, ArkVerifyingKey<Bls12_381>) {
         let mut rng = test_rng();
 
         let (pk, vk) = match self {
-            Relation::Xor => Groth16::<Bls12_381>::circuit_specific_setup(
+            ArkRelation::Xor => Groth16::<Bls12_381>::circuit_specific_setup(
                 XorRelationWithoutInput::new(2),
                 &mut rng,
             ),
-            Relation::Withdraw => Groth16::<Bls12_381>::circuit_specific_setup(
+            ArkRelation::Withdraw => Groth16::<Bls12_381>::circuit_specific_setup(
                 WithdrawRelationWithoutInput::new(16),
                 &mut rng,
             ),
@@ -44,13 +62,13 @@ impl Relation {
         (pk, vk)
     }
 
-    pub fn generate_proof(&self, pk: ProvingKey<Bls12_381>) -> Proof<Bls12_381> {
+    pub fn generate_proof(&self, pk: ArkProvingKey<Bls12_381>) -> ArkProof<Bls12_381> {
         let mut rng = test_rng();
         match self {
-            Relation::Xor => {
+            ArkRelation::Xor => {
                 Groth16::<Bls12_381>::prove(&pk, XorRelationWithFullInput::new(2, 1, 3), &mut rng)
             }
-            Relation::Withdraw => {
+            ArkRelation::Withdraw => {
                 let circuit = WithdrawRelationWithFullInput::new(
                     16,
                     10,
@@ -95,10 +113,10 @@ impl Relation {
         .unwrap()
     }
 
-    pub fn verify_proof(&self, proof: &Proof<Bls12_381>, vk: &VerifyingKey<Bls12_381>) {
+    pub fn verify_proof(&self, proof: &ArkProof<Bls12_381>, vk: &ArkVerifyingKey<Bls12_381>) {
         match self {
-            Relation::Xor => (),
-            Relation::Withdraw => {
+            ArkRelation::Xor => (),
+            ArkRelation::Withdraw => {
                 let public_input = WithdrawRelationWithPublicInput::new(
                     16,
                     10,
@@ -117,4 +135,95 @@ impl Relation {
             }
         };
     }
+}
+
+pub enum JfRelation {
+    Withdraw,
+}
+
+impl JfRelation {
+    pub fn generate_circuit(&self) {
+        jf_relation().generate_circuit().unwrap();
+    }
+
+    pub fn generate_srs(&self) -> UnivariateUniversalParams<Curve> {
+        let rng = &mut jf_utils::test_rng();
+        generate_srs(17_000, rng).unwrap()
+    }
+
+    pub fn generate_keys(
+        &self,
+        srs: &UnivariateUniversalParams<Curve>,
+    ) -> (JfProvingKey<Curve>, JfVerifyingKey<Curve>) {
+        WithdrawRelation::generate_keys(srs).unwrap()
+    }
+
+    pub fn generate_proof(&self, pk: JfProvingKey<Curve>) -> JfProof<Curve> {
+        let rng = &mut jf_utils::test_rng();
+        let relation = jf_relation();
+        relation.generate_proof(&pk, rng).unwrap()
+    }
+
+    pub fn verify_proof(&self, proof: &JfProof<Curve>, vk: &JfVerifyingKey<Curve>) {
+        let input = jf_relation().public_input();
+        assert!(
+            PlonkKzgSnark::<Curve>::verify::<StandardTranscript>(&vk, &input, &proof, None,)
+                .is_ok()
+        )
+    }
+}
+
+fn jf_relation() -> WithdrawRelation {
+    let token_id = 1;
+    let whole_token_amount = 10;
+    let spend_trapdoor = [1; 4];
+    let spend_nullifier = [2; 4];
+    let spend_note = compute_note(
+        token_id,
+        whole_token_amount,
+        spend_trapdoor,
+        spend_nullifier,
+    );
+
+    let deposit_token_amount = 7;
+    let deposit_trapdoor = [3; 4];
+    let deposit_nullifier = [4; 4];
+    let deposit_note = compute_note(
+        token_id,
+        deposit_token_amount,
+        deposit_trapdoor,
+        deposit_nullifier,
+    );
+
+    let leaf_index = 0u64;
+    let uid = BigUint::from(leaf_index);
+    let elem = convert_array(spend_note);
+    let mt = RescueSparseMerkleTree::from_kv_set(11, &[(uid.clone(), elem)]).unwrap();
+    let (retrieved_elem, merkle_proof) = mt.lookup(&uid).expect_ok().unwrap();
+    assert_eq!(retrieved_elem, elem);
+    assert!(mt.verify(&uid, merkle_proof.clone()).expect("succeed"));
+    let merkle_root = mt.commitment().digest().into_bigint().0;
+
+    let public_input = WithdrawPublicInput {
+        fee: 1,
+        recipient: [7; 32],
+        token_id,
+        spend_nullifier,
+        token_amount_out: 3,
+        merkle_root,
+        deposit_note,
+    };
+
+    let private_input = WithdrawPrivateInput {
+        spend_trapdoor,
+        deposit_trapdoor,
+        deposit_nullifier,
+        merkle_proof,
+        leaf_index,
+        spend_note,
+        whole_token_amount,
+        deposit_token_amount,
+    };
+
+    WithdrawRelation::new(public_input, private_input)
 }
