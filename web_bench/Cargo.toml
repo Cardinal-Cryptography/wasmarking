@@ -17,9 +17,9 @@ js-sys = "0.3"
 
 num-bigint = { version = "0.4", default-features = false }
 ark-ff = { version = "^0.4.0" }
-jf-utils = { path = "../../../espresso/jellyfish/utilities", default-features = false  }
-jf-primitives = { path = "../../../espresso/jellyfish/primitives", default-features = false  }
-jf-relations = { path = "../../aleph-node/relations/jf", default-features = false , package = "liminal-jf-relations", features = ["test-srs"]}
+jf-primitives = { git = "https://github.com/EspressoSystems/jellyfish", rev = "f431648" }
+jf-utils = { git = "https://github.com/EspressoSystems/jellyfish", rev = "f431648" }
+jf-relations = { git = "https://github.com/Cardinal-Cryptography/aleph-node", branch = "web_bench", default-features = false , package = "liminal-jf-relations", features = ["test-srs"]}
 
 [features]
 parallel = ["rayon", "wasm-bindgen-rayon", "jf-utils/parallel", "jf-primitives/parallel", "jf-relations/parallel"]
