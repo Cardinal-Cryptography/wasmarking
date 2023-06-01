@@ -1,6 +1,5 @@
-use wasm_bindgen::prelude::*;
 use js_sys::Date;
-
+use wasm_bindgen::prelude::*;
 #[cfg(feature = "parallel")]
 pub use wasm_bindgen_rayon::init_thread_pool;
 
