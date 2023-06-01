@@ -1,0 +1,25 @@
+[package]
+name = "proof-gen-web-bench"
+version = "0.1.0"
+edition = "2021"
+publish = false
+license = "Apache-2.0"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+wasm-bindgen-rayon = { version = "1.0", optional = true }
+wasm-bindgen = "0.2.74"
+rayon = { version = "1.5", optional = true }
+getrandom = { version = "0.2.2", features = ["js"] }
+js-sys = "0.3"
+
+num-bigint = { version = "0.4", default-features = false }
+ark-ff = { version = "^0.4.0" }
+jf-utils = { path = "../../../espresso/jellyfish/utilities", default-features = false  }
+jf-primitives = { path = "../../../espresso/jellyfish/primitives", default-features = false  }
+jf-relations = { path = "../../aleph-node/relations/jf", default-features = false , package = "liminal-jf-relations", features = ["test-srs"]}
+
+[features]
+parallel = ["rayon", "wasm-bindgen-rayon", "jf-utils/parallel", "jf-primitives/parallel", "jf-relations/parallel"]
