@@ -6,5 +6,9 @@ Install dependencies:
 Build webpage:
 `yarn build`
 
+
+Install serve:
+`npm install --global serve`
+
 Serve it:
 `serve dist`
