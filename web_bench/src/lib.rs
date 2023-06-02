@@ -4,7 +4,7 @@ use wasm_bindgen::prelude::*;
 pub use wasm_bindgen_rayon::init_thread_pool;
 
 #[wasm_bindgen]
-pub fn generate_proof() -> JsValue {
+pub fn bench_proof_generation() -> JsValue {
     let relation = JfRelation::Withdraw;
     let srs = relation.generate_srs();
     let (pk, _) = relation.generate_keys(&srs);

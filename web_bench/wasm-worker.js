@@ -2,9 +2,9 @@ import { threads } from 'wasm-feature-detect';
 import * as Comlink from 'comlink';
 
 // Wrap wasm-bindgen exports (the `generate` function) to add time measurement.
-function wrapExports({ generate_proof }) {
+function wrapExports({ bench_proof_generation }) {
   return () => {
-    const time = generate_proof();
+    const time = bench_proof_generation();
     return time;
   };
 }
